@@ -1,18 +1,256 @@
 <style>
-    table, th, td {
-      border: 1px solid black;
-      border-collapse: collapse;
-    }
-  
-    th {
-      text-align: left;
-    }
-  
-    #message, #url {
-      color: red;
-    }
-  
-    div#footer {
-      margin-top: 10px;
-    }
+  /* common */
+  body {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+    background: #5b979b;
+    color: white;
+  }
+
+  header {
+    position: fixed;
+    top: 0;
+    padding: 1em;
+    background: rgba(0, 0, 0, 0.5);
+  }
+  header a {
+    color: #8e44ad;
+    font-weight: bold;
+  }
+
+  h1 {
+    margin: 0 0 1em;
+  }
+
+  section {
+    margin-bottom: 2em;
+  }
+
+  .group {
+    display: flex;
+    align-items: center;
+    margin-bottom: 2em;
+  }
+
+  input[type="text"] {
+    position: absolute;
+    color: #8e44ad;
+    margin-right: 1em;
+    padding-left: 1em;
+    padding-right: 1em;
+    line-height: 2;
+    min-width: 40em;
+  }
+
+  input[type="checkbox"],
+  input[type="radio"] {
+    position: absolute;
+    opacity: 0;
+    z-index: -1;
+  }
+
+  input#otherVersion {
+    min-width: 170px;
+    margin-left: 360px;
+    display: none;
+  }
+
+  label {
+    position: relative;
+    margin-right: 1em;
+    padding-left: 2em;
+    padding-right: 1em;
+    line-height: 2;
+    cursor: pointer;
+  }
+  label:before {
+    box-sizing: border-box;
+    content: " ";
+    position: absolute;
+    top: 0.3em;
+    left: 0;
+    display: block;
+    width: 1.4em;
+    height: 1.4em;
+    border: 2px solid white;
+    border-radius: 0.25em;
+    z-index: -1;
+  }
+
+  input[type="radio"] + label::before {
+    border-radius: 1em;
+  }
+
+  /* Checked */
+  input[type="checkbox"]:checked + label,
+  input[type="radio"]:checked + label {
+    padding-left: 1em;
+    color: #8e44ad;
+  }
+  input[type="checkbox"]:checked + label:before,
+  input[type="radio"]:checked + label:before {
+    top: 0;
+    width: 100%;
+    height: 2em;
+    background: white;
+  }
+
+  /* Transition */
+  label,
+  label::before {
+    transition: 0.25s all ease;
+  }
+
+  /* default display */
+  #actGroupCreate,
+  #actGroupUpload {
+    display: none;
+  }
+
+  .headerGroup {
+    width: 620px;
+    position: absolute;
+    top: 50px;
+  }
+</style>
+
+<style>
+  /*file upload*/
+  .file-upload {
+    background-color: #ffffff;
+    width: 530px;
+    padding: 20px;
+  }
+
+  .file-upload-btn {
+    margin-top: 20px;
+    width: 100%;
+    color: #fff;
+    background: #1fb264;
+    border: none;
+    padding: 10px;
+    border-radius: 4px;
+    border-bottom: 4px solid #15824b;
+    transition: all 0.2s ease;
+    outline: none;
+    text-transform: uppercase;
+    font-weight: 700;
+  }
+
+  .file-upload-btn:hover {
+    background: #1aa059;
+    color: #ffffff;
+    transition: all 0.2s ease;
+    cursor: pointer;
+  }
+
+  .file-upload-btn:active {
+    border: 0;
+    transition: all 0.2s ease;
+  }
+
+  .file-upload-content {
+    display: none;
+    text-align: center;
+  }
+
+  .file-upload-input {
+    position: absolute;
+    margin: 0;
+    padding: 0;
+    width: 100%;
+    height: 100%;
+    outline: none;
+    opacity: 0;
+    cursor: pointer;
+  }
+
+  .image-upload-wrap {
+    border: 4px dashed #1fb264;
+    position: relative;
+  }
+
+  .image-dropping,
+  .image-upload-wrap:hover {
+    background-color: #1fb264;
+    border: 4px dashed #ffffff;
+  }
+
+  .image-title-wrap {
+    padding: 0 15px 15px 15px;
+    color: #222;
+  }
+
+  .drag-text {
+    text-align: center;
+  }
+
+  .drag-text h3 {
+    font-weight: 100;
+    text-transform: uppercase;
+    color: #15824b;
+    padding: 60px 0;
+  }
+
+  .file-upload-image {
+    max-height: 200px;
+    max-width: 200px;
+    margin: auto;
+    padding: 20px;
+  }
+
+  .remove-image {
+    width: 200px;
+    margin: 0;
+    color: #fff;
+    background: #cd4535;
+    border: none;
+    padding: 10px;
+    border-radius: 4px;
+    border-bottom: 4px solid #b02818;
+    transition: all 0.2s ease;
+    outline: none;
+    text-transform: uppercase;
+    font-weight: 700;
+  }
+
+  .remove-image:hover {
+    background: #c13b2a;
+    color: #ffffff;
+    transition: all 0.2s ease;
+    cursor: pointer;
+  }
+
+  .remove-image:active {
+    border: 0;
+    transition: all 0.2s ease;
+  }
+</style>
+
+<style>
+  /* button */
+  .btn {
+    font-family: "Helvetica", "Arial", sans-serif;
+    display: inline-block;
+    font-size: 1em;
+    padding: 1em 2em;
+    -webkit-appearance: none;
+    appearance: none;
+    background-color: #8e44ad;
+    color: #fff;
+    border-radius: 4px;
+    border: none;
+    cursor: pointer;
+    position: relative;
+    transition: transform ease-in 0.1s, box-shadow ease-in 0.25s;
+    box-shadow: 0 2px 25px rgba(255, 0, 130, 0.5);
+  }
+
+  .btn:active {
+    transform: scale(0.9);
+    background-color: #7f3d9b;
+    box-shadow: 0 2px 25px rgba(255, 0, 130, 0.2);
+  }
 </style>

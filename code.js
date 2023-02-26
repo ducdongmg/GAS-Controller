@@ -1,56 +1,69 @@
+const DEVELOP_FOLDER_ID = "parent folder id";
 
-const DEVELOP_FOLDER_ID = 'parent folder id';
+const TEMPLATE_CHECKLIST_ID = "spreadsheet file id";
+const TEMPLATE_OUTLINE_DESIGN_ID = "spreadsheet file id";
+const TEMPLATE_DETAIL_DESIGN_ID = "spreadsheet file id";
+const TEMPLATE_TEST_ID = "spreadsheet file id";
 
-const TEMPLATE_CHECKLIST_ID = 'spreadsheet file id';
-const TEMPLATE_OUTLINE_DESIGN_ID = 'spreadsheet file id';
-const TEMPLATE_DETAIL_DESIGN_ID = 'spreadsheet file id';
-const TEMPLATE_TEST_ID = 'spreadsheet file id';
+const TEMPLATE_TYPE_OUTLINE = "outline";
+const TEMPLATE_TYPE_DETAIL = "detail";
+const TEMPLATE_TYPE_TEST = "test";
+const TEMPLATE_TYPE_CHECK_LIST = "checklist";
 
-
-const TEMPLATE_TYPE_CHECK_LIST = 1;
-const TEMPLATE_TYPE_OUTLINE = 2;
-const TEMPLATE_TYPE_DETAIL = 3;
-const TEMPLATE_TYPE_TEST = 4;
-
-const TEST_SPECIFICATION_FOLDER_NAME = '003.実装・単体テスト';
-const DETAIL_DESIGN_FOLDER_NAME = '002.詳細設計書';
-const OUTLINE_DESIGN_FOLDER_NAME = '001.概要設計書';
+const TEST_SPECIFICATION_FOLDER_NAME = "003.実装・単体テスト";
+const DETAIL_DESIGN_FOLDER_NAME = "002.詳細設計書";
+const OUTLINE_DESIGN_FOLDER_NAME = "001.概要設計書";
 
 /**
- * loading Screen UI 
+ * loading Screen UI
  */
 function doGet() {
-  return HtmlService.createTemplateFromFile('copy_template_page').evaluate();
+  return HtmlService.createTemplateFromFile("copy_template_page").evaluate();
 }
 
 /**
  * for importing other html files
  */
 function include(filename) {
-  return HtmlService.createHtmlOutputFromFile(filename)
-      .getContent();
+  return HtmlService.createHtmlOutputFromFile(filename).getContent();
 }
 
+function tesing() {
+  /*
+  let targetFolderUrl = "https://drive.google.com/drive/u/0/folders/1yxxxxxx";
+  let templateType = "detail";
+  let rs = executeCopyTemplateByUrl(targetFolderUrl, templateType)
+  console.log(rs);
+*/
+  let version = "v10.0";
+  let featureName = "fearter ";
+  let rs = execCreateDevelopFolder(version, featureName);
+  console.log(rs);
+}
 
 function executeCopyTemplateByUrl(targetFolderUrl, templateType) {
   console.log(templateType);
   let folder = getFolderByUrl(targetFolderUrl);
-  let url = '';
-  switch(templateType) {
+  let url = (templateName = "");
+  switch (templateType) {
     case TEMPLATE_TYPE_CHECK_LIST:
       url = copyFile(TEMPLATE_CHECKLIST_ID, folder);
+      templateName = "check list url: ";
       break;
 
     case TEMPLATE_TYPE_OUTLINE:
       url = copyFile(TEMPLATE_OUTLINE_DESIGN_ID, folder);
+      templateName = "outline url: ";
       break;
-      
+
     case TEMPLATE_TYPE_DETAIL:
       url = copyFile(TEMPLATE_DETAIL_DESIGN_ID, folder);
+      templateName = "detail url: ";
       break;
-      
+
     case TEMPLATE_TYPE_TEST:
       url = copyFile(TEMPLATE_TEST_ID, folder);
+      templateName = "test url: ";
       break;
 
     default:
@@ -58,35 +71,33 @@ function executeCopyTemplateByUrl(targetFolderUrl, templateType) {
       break;
   }
   console.log(url);
-  return url;
+  return [templateName, url];
 }
 
-function executeCopyTemplate(version, featureName, templateType) {
-  console.log(templateType);
-  let url = '';
-  switch(templateType) {
-    case TEMPLATE_TYPE_CHECK_LIST:
-      url = copyCheckListTemplate(version, featureName);
-      break;
+function execCreateDevelopFolder(version, featureName) {
+  let devFolder = createFolder(version, featureName);
+  copyOutlineDesignTemplate(version, featureName);
 
-    case TEMPLATE_TYPE_OUTLINE:
-      url = copyOutlineDesignTemplate(version, featureName);
-      break;
-      
-    case TEMPLATE_TYPE_DETAIL:
-      url = copyDetailDesignTemplate(version, featureName);
-      break;
-      
-    case TEMPLATE_TYPE_TEST:
-      url = copyTestTemplate(version, featureName);
-      break;
+  copyDetailDesignTemplate(version, featureName);
 
-    default:
-      // do nothing
-      break;
-  }
-  console.log(url);
-  return url;
+  copyTestTemplate(version, featureName);
+
+  copyCheckListTemplate(version, featureName);
+
+  let folderUrl = devFolder.getUrl();
+  console.log(folderUrl);
+  return folderUrl;
+}
+
+/**
+ * Copy checklist file
+ */
+function createFolder(version, featureName) {
+  let arrPath = [];
+  arrPath.push(version);
+  arrPath.push(featureName);
+
+  return createFolderForTemplateFile(arrPath);
 }
 
 /**
@@ -152,7 +163,7 @@ function copyTemplate(templateId, arrPath) {
 function copyFile(fileId, folder) {
   // template file
   let file = DriveApp.getFileById(fileId);
-  let newFileName = file.getName() + '_copy';
+  let newFileName = file.getName() + "_copy";
 
   var dest = findFileIn(folder, newFileName);
   if (dest === undefined) {
@@ -164,6 +175,5 @@ function copyFile(fileId, folder) {
     return newFile.getUrl();
   }
 
-  return '';
+  return "";
 }
-
