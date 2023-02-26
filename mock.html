@@ -55,7 +55,7 @@
         padding-left: 1em;
         padding-right: 1em;
         line-height: 2;
-        min-width: 46em;
+        min-width: 40em;
       }
 
       input[type="checkbox"],
@@ -63,6 +63,12 @@
         position: absolute;
         opacity: 0;
         z-index: -1;
+      }
+
+      input#otherVersion {
+        min-width: 170px;
+        margin-left: 360px;
+        display: none;
       }
 
       label {
@@ -118,7 +124,7 @@
       }
 
       .headerGroup {
-        min-width: 640px;
+        width: 620px;
         position: absolute;
         top: 50px;
       }
@@ -128,8 +134,7 @@
       /*file upload*/
       .file-upload {
         background-color: #ffffff;
-        width: 600px;
-        margin: 0 auto;
+        width: 530px;
         padding: 20px;
       }
 
@@ -267,7 +272,7 @@
     <script id="common">
       function init() {
         addRequiredForCheckbox();
-        switchAction();
+        initOnChangeEvent();
       }
 
       function addRequiredForCheckbox() {
@@ -290,7 +295,7 @@
         );
       }
 
-      function switchAction() {
+      function initOnChangeEvent() {
         $("input[name='act']").change(function () {
           let act = $(this).val();
           $("section").hide();
@@ -313,11 +318,23 @@
               break;
           }
         });
+
+        $("input[name='version']").change(function () {
+          let version = $(this).val();
+          switch (version) {
+            case "other":
+              $("#otherVersion").show();
+              break;
+            default:
+              $("#otherVersion").hide();
+              break;
+          }
+        });
       }
     </script>
 
     <script name="CreateDevelopFolder">
-      function validCreateDevFolder() {
+      function createFolder() {
         if (!validCreateDevFolder()) {
           return false;
         }
@@ -345,11 +362,22 @@
       }
 
       function validCreateDevFolder() {
+        debugger;
+
         // checking target folder filled in
-        let isValidFolderUrl = document
-          .querySelector("#featureName")
+        if ($("#otherVersion").is(":visible")) {
+          let isOtherVersion = document
+            .querySelector("#otherVersion")
+            .reportValidity();
+          if (!isOtherVersion) {
+            return false;
+          }
+        }
+        // checking target folder filled in
+        let isValidFeatureName = document
+          .querySelector("[name='featureName']")
           .reportValidity();
-        if (!isValidFolderUrl) {
+        if (!isValidFeatureName) {
           return false;
         }
 
@@ -368,7 +396,7 @@
         let targetFolderUrl = $("#targetFolderUrl").val().trim();
         let selectedTemplate = [];
         $("input[name='template[]']:checked").each(function () {
-          let templateType = parseInt($(this).val());
+          let templateType = $(this).val();
           // google.script.run
           //   .withSuccessHandler(showTemplateUrl)
           //   .withFailureHandler(showError)
@@ -505,14 +533,14 @@
           <label for="template4">Check list</label>
         </div>
 
-        <h2>Target folder</h2>
+        <h2>Target folder's url</h2>
         <div class="group">
           <input
             type="text"
             name="targetFolderUrl"
             class="form-control"
             id="targetFolderUrl"
-            placeholder="Enter target folder"
+            placeholder="Enter target folder's url"
             required="required"
           />
         </div>
@@ -537,6 +565,9 @@
           <label for="version2">v10.1</label>
           <input type="radio" name="version" id="version3" value="v.x.x" />
           <label for="version3">v.x.x</label>
+          <input type="radio" name="version" id="version4" value="other" />
+          <label for="version4">other</label>
+          <input type="text" name="otherVersion" id="otherVersion" required />
         </div>
 
         <h2>Feature's name</h2>
@@ -551,7 +582,9 @@
           />
         </div>
 
-        <button id="btnCreateFolder" class="btn">Create Folder</button>
+        <button id="btnCreateFolder" class="btn" onclick="createFolder()">
+          Create Folder
+        </button>
 
         <div id="createFolderResult"></div>
       </section>
