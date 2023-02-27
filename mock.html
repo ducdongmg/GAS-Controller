@@ -145,7 +145,7 @@
       .file-upload {
         background-color: #ffffff;
         width: 530px;
-        padding: 20px;
+        padding: 16px;
       }
 
       .file-upload-btn {
@@ -343,59 +343,6 @@
       }
     </script>
 
-    <script name="CreateDevelopFolder">
-      function createFolder() {
-        showFolderUrl(
-          "https://ajax.googleapis.com/ajax/libs/jquery/3.6.3/jquery.min.js"
-        );
-
-        if (!validCreateDevFolder()) {
-          return false;
-        }
-
-        $("#createFolderResult").text("Creating folder...");
-
-        let featureName = $("#featureName").val().trim();
-        let version = $("input[name='version']:checked").val();
-
-        // google.script.run
-        //   .withSuccessHandler(showFolderUrl)
-        //   .withFailureHandler(showError)
-        //   .execCreateDevelopFolder(version, featureName);
-        $("#createFolderResult").html(`<p>creating folder: ${featureName}</p>`);
-      }
-
-      function showFolderUrl(url) {
-        console.log(url);
-        $("#createFolderResult").html(
-          `✅　<a href="${url}" target="_blank">Created folder</a>`
-        );
-        // $("#submitButton").show();
-      }
-
-      function validCreateDevFolder() {
-
-        // checking target folder filled in
-        if ($("#otherVersion").is(":visible")) {
-          let isOtherVersion = document
-            .querySelector("#otherVersion")
-            .reportValidity();
-          if (!isOtherVersion) {
-            return false;
-          }
-        }
-        // checking target folder filled in
-        let isValidFeatureName = document
-          .querySelector("[name='featureName']")
-          .reportValidity();
-        if (!isValidFeatureName) {
-          return false;
-        }
-
-        return true;
-      }
-    </script>
-
     <script name="CopyTemplate">
       function copyFile() {
         if (!validCopyTemplate()) {
@@ -403,7 +350,6 @@
         }
 
         $("#btnCopy").hide();
-        $("#copyResult").text("Generating...");
 
         let targetFolderUrl = $("#targetFolderUrl").val().trim();
         let selectedTemplate = [];
@@ -453,7 +399,86 @@
       }
     </script>
 
+    <script name="CreateDevelopFolder">
+      function createFolder() {
+        showFolderUrl(
+          "https://ajax.googleapis.com/ajax/libs/jquery/3.6.3/jquery.min.js"
+        );
+
+        if (!validCreateDevFolder()) {
+          return false;
+        }
+
+        $("#createFolderResult").text("Creating folder...");
+
+        let featureName = $("#featureName").val().trim();
+        let version = $("input[name='version']:checked").val();
+
+        // google.script.run
+        //   .withSuccessHandler(showFolderUrl)
+        //   .withFailureHandler(showError)
+        //   .execCreateDevelopFolder(version, featureName);
+        $("#createFolderResult").html(`<p>creating folder: ${featureName}</p>`);
+      }
+
+      function showFolderUrl(url) {
+        console.log(url);
+        $("#createFolderResult").html(
+          `✅　<a href="${url}" target="_blank">Created folder</a>`
+        );
+        // $("#submitButton").show();
+      }
+
+      function validCreateDevFolder() {
+        // checking target folder filled in
+        if ($("#otherVersion").is(":visible")) {
+          let isOtherVersion = document
+            .querySelector("#otherVersion")
+            .reportValidity();
+          if (!isOtherVersion) {
+            return false;
+          }
+        }
+        // checking target folder filled in
+        let isValidFeatureName = document
+          .querySelector("[name='featureName']")
+          .reportValidity();
+        if (!isValidFeatureName) {
+          return false;
+        }
+
+        return true;
+      }
+    </script>
+
     <script id="upload-js">
+      function uploadFile() {
+        if (!validUploadFolder()) {
+          return false;
+        }
+        let targetUploadFolderUrl = $("#targetUploadFolderUrl").val().trim();
+
+        const file = document.getElementById("fileUploadInput").files[0];
+        const fr = new FileReader();
+        fr.onload = function (e) {
+          const obj = {
+            filename: file.name,
+            mimeType: file.type,
+            bytes: [...new Int8Array(e.target.result)],
+          };
+
+          google.script.run
+            .withSuccessHandler((folderUrl) =>
+              $("#uploadFolderResult").html(
+                `✅　<a href="${folderUrl}" target="_blank">Upload finished</a>`
+              )
+            )
+            .withFailureHandler(showError)
+            .saveFile(obj, targetUploadFolderUrl);
+        };
+        fr.readAsArrayBuffer(file);
+      }
+
       function readURL(input) {
         if (input.files && input.files[0]) {
           var reader = new FileReader();
@@ -484,7 +509,18 @@
       $(".image-upload-wrap").bind("dragleave", function () {
         $(".image-upload-wrap").removeClass("image-dropping");
       });
-      //# sourceURL=pen.js
+
+      function validUploadFolder() {
+        // checking target folder filled in
+        let isValidFolderUrl = document
+          .querySelector("#targetUploadFolderUrl")
+          .reportValidity();
+        if (!isValidFolderUrl) {
+          return false;
+        }
+
+        return true;
+      }
     </script>
   </head>
 
@@ -603,39 +639,56 @@
 
       <!-- section: Upload file -->
       <section id="actGroupUpload">
-        <div class="file-upload">
-          <div class="image-upload-wrap">
-            <input
-              class="file-upload-input"
-              type="file"
-              onchange="readURL(this);"
-              accept="image/*"
-            />
-            <div class="drag-text">
-              <h3>Drag and drop a file or select add Image</h3>
-            </div>
-          </div>
-          <div class="file-upload-content">
-            <img class="file-upload-image" src="#" alt="your image" />
-            <div class="image-title-wrap">
-              <button
-                type="button"
-                onclick="removeUpload()"
-                class="remove-image"
-              >
-                Remove <span class="image-title">Uploaded Image</span>
-              </button>
-            </div>
-          </div>
-
-          <button
-            class="file-upload-btn"
-            type="button"
-            onclick="$('.file-upload-input').trigger( 'click' )"
-          >
-            Upload file
-          </button>
+        <h2>Target folder's url</h2>
+        <div class="group">
+          <input
+            type="text"
+            name="targetUploadFolderUrl"
+            class="form-control"
+            id="targetUploadFolderUrl"
+            placeholder="Enter target folder's url"
+            required="required"
+          />
         </div>
+        <div class="group">
+          <div class="file-upload">
+            <div class="image-upload-wrap">
+              <input
+                class="file-upload-input"
+                type="file"
+                id="fileUploadInput"
+                onchange="readURL(this);"
+              />
+              <div class="drag-text">
+                <h3>Drag and drop a file or select add Image</h3>
+              </div>
+            </div>
+            <div class="file-upload-content">
+              <img class="file-upload-image" src="#" alt="your image" />
+              <div class="image-title-wrap">
+                <button
+                  type="button"
+                  onclick="removeUpload()"
+                  class="remove-image"
+                >
+                  Remove <span class="image-title">Uploaded Image</span>
+                </button>
+              </div>
+            </div>
+
+            <button
+              class="file-upload-btn"
+              type="button"
+              onclick="$('.file-upload-input').trigger( 'click' )"
+            >
+              Add file
+            </button>
+          </div>
+        </div>
+        <button id="btnUploadFile" class="btn" onclick="uploadFile()">
+          Upload File
+        </button>
+        <div id="uploadFolderResult" class="result"></div>
       </section>
     </div>
   </body>

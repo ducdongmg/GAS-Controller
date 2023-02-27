@@ -14,12 +14,12 @@ function findFileIn(folder, name) {
  * Return all files in target folder
  */
 function filesIn(folder) {
-  var filderInterator  = folder.getFiles();
+  var filderInterator = folder.getFiles();
   var arr = [];
   while (filderInterator.hasNext()) {
     var file = filderInterator.next();
     arr.push(file);
-  } 
+  }
   return arr;
 }
 
@@ -38,6 +38,13 @@ function fileNames(files) {
 /**
  * true if the value is exist in the array
  */
-function checkValIn(arr, val) { 
-  return arr.indexOf(val) > -1; 
+function checkValIn(arr, val) {
+  return arr.indexOf(val) > -1;
+}
+
+function saveFile(obj, targetUploadFolderUrl) {
+  let blob = Utilities.newBlob(obj.bytes, obj.mimeType, obj.filename);
+  let folder = getFolderByUrl(targetUploadFolderUrl);
+  folder.createFile(blob);
+  return targetUploadFolderUrl;
 }

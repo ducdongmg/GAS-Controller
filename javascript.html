@@ -167,6 +167,32 @@
 </script>
 
 <script id="upload-js">
+  function uploadFile() {
+    if (!validUploadFolder()) {
+      return false;
+    }
+    let targetUploadFolderUrl = $("#targetUploadFolderUrl").val().trim();
+
+    const file = document.getElementById("fileUploadInput").files[0];
+    const fr = new FileReader();
+    fr.onload = function (e) {
+      const obj = {
+        filename: file.name,
+        mimeType: file.type,
+        bytes: [...new Int8Array(e.target.result)],
+      };
+      google.script.run
+        .withSuccessHandler((folderUrl) =>
+          $("#uploadFolderResult").html(
+            `✅　<a href="${folderUrl}" target="_blank">Upload finished</a>`
+          )
+        )
+        .withFailureHandler(showError)
+        .saveFile(obj, targetUploadFolderUrl);
+    };
+    fr.readAsArrayBuffer(file);
+  }
+
   function readURL(input) {
     if (input.files && input.files[0]) {
       var reader = new FileReader();
@@ -197,5 +223,16 @@
   $(".image-upload-wrap").bind("dragleave", function () {
     $(".image-upload-wrap").removeClass("image-dropping");
   });
-  //# sourceURL=pen.js
+
+  function validUploadFolder() {
+    // checking target folder filled in
+    let isValidFolderUrl = document
+      .querySelector("#targetUploadFolderUrl")
+      .reportValidity();
+    if (!isValidFolderUrl) {
+      return false;
+    }
+
+    return true;
+  }
 </script>
