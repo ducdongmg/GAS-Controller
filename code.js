@@ -48,22 +48,22 @@ function executeCopyTemplateByUrl(targetFolderUrl, templateType) {
   switch (templateType) {
     case TEMPLATE_TYPE_CHECK_LIST:
       url = copyFile(TEMPLATE_CHECKLIST_ID, folder);
-      templateName = "check list url: ";
+      templateName = "Check List Url";
       break;
 
     case TEMPLATE_TYPE_OUTLINE:
       url = copyFile(TEMPLATE_OUTLINE_DESIGN_ID, folder);
-      templateName = "outline url: ";
+      templateName = "Outline Url";
       break;
 
     case TEMPLATE_TYPE_DETAIL:
       url = copyFile(TEMPLATE_DETAIL_DESIGN_ID, folder);
-      templateName = "detail url: ";
+      templateName = "Detail Url";
       break;
 
     case TEMPLATE_TYPE_TEST:
       url = copyFile(TEMPLATE_TEST_ID, folder);
-      templateName = "test url: ";
+      templateName = "Test Url";
       break;
 
     default:
