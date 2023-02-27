@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <base target="_top" />
+    <meta charset="UTF-8" />
+
+    <title>Google Driver Controller</title>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <link
+      rel="stylesheet"
+      href="https://fonts.googleapis.com/css?family=Open+Sans:400,300,700"
+    />
+    <?!= include('Stylesheet'); ?>
+  </head>
+  <body translate="no" onload="init()">
+    <div class="headerGroup">
+      <div>
+        <h1>Google Driver Controller</h1>
+
+        <h2>Action</h2>
+        <div class="group">
+          <input
+            type="radio"
+            name="act"
+            id="act1"
+            value="copyTemplate"
+            checked
+          />
+          <label for="act1">Copy file to folder</label>
+          <input type="radio" name="act" id="act2" value="createDevFolder" />
+          <label for="act2">Create develop folder</label>
+          <input type="radio" name="act" id="act3" value="upload" />
+          <label for="act3">Upload file</label>
+        </div>
+      </div>
+
+      <!-- section: Copy file to folder -->
+      <section id="actGroupCopy">
+        <h2>Template file</h2>
+        <div class="group">
+          <input
+            type="checkbox"
+            name="template[]"
+            id="template1"
+            value="outline"
+            checked
+          />
+          <label for="template1">Outline design</label>
+          <input
+            type="checkbox"
+            name="template[]"
+            id="template2"
+            value="detail"
+          />
+          <label for="template2">Detail design</label>
+          <input
+            type="checkbox"
+            name="template[]"
+            id="template3"
+            value="test"
+          />
+          <label for="template3">Test specification</label>
+          <input
+            type="checkbox"
+            name="template[]"
+            id="template4"
+            value="checklist"
+          />
+          <label for="template4">Check list</label>
+        </div>
+
+        <h2>Target folder's url</h2>
+        <div class="group">
+          <input
+            type="text"
+            name="targetFolderUrl"
+            class="form-control"
+            id="targetFolderUrl"
+            placeholder="Enter target folder's url"
+            required="required"
+          />
+        </div>
+        <button id="btnCopy" class="btn" onclick="copyFile()">Copy</button>
+
+        <div id="copyResult" class="result"></div>
+      </section>
+
+      <!-- section: Create develop folder -->
+      <section id="actGroupCreate">
+        <h2>Version</h2>
+        <div class="group">
+          <input
+            type="radio"
+            name="version"
+            id="version1"
+            value="v10.0"
+            checked
+          />
+          <label for="version1">v10.0</label>
+          <input type="radio" name="version" id="version2" value="v10.1" />
+          <label for="version2">v10.1</label>
+          <input type="radio" name="version" id="version3" value="v.x.x" />
+          <label for="version3">v.x.x</label>
+          <input type="radio" name="version" id="version4" value="other" />
+          <label for="version4">other</label>
+          <input type="text" name="otherVersion" id="otherVersion" required />
+        </div>
+
+        <h2>Feature's name</h2>
+        <div class="group">
+          <input
+            type="text"
+            name="featureName"
+            class="form-control"
+            id="featureName"
+            placeholder="Enter feature's name"
+            required="required"
+          />
+        </div>
+
+        <button id="btnCreateFolder" class="btn" onclick="createFolder()">
+          Create Folder
+        </button>
+
+        <div id="createFolderResult" class="result"></div>
+      </section>
+
+      <!-- section: Upload file -->
+      <section id="actGroupUpload">
+        <div class="file-upload">
+          <div class="image-upload-wrap">
+            <input
+              class="file-upload-input"
+              type="file"
+              onchange="readURL(this);"
+              accept="image/*"
+            />
+            <div class="drag-text">
+              <h3>Drag and drop a file or select add Image</h3>
+            </div>
+          </div>
+          <div class="file-upload-content">
+            <img class="file-upload-image" src="#" alt="your image" />
+            <div class="image-title-wrap">
+              <button
+                type="button"
+                onclick="removeUpload()"
+                class="remove-image"
+              >
+                Remove <span class="image-title">Uploaded Image</span>
+              </button>
+            </div>
+          </div>
+
+          <button
+            class="file-upload-btn"
+            type="button"
+            onclick="$('.file-upload-input').trigger( 'click' )"
+          >
+            Upload file
+          </button>
+        </div>
+      </section>
+    </div>
+
+    <?!= include('JavaScript'); ?>
+  </body>
+</html>
