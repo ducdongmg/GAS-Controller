@@ -138,6 +138,26 @@
         margin: 0;
         padding: 0;
       }
+
+      .fw-cartain {
+        position: fixed;
+        top: 0;
+        right: 0;
+        bottom: 0;
+        left: 0;
+        z-index: 2;
+        background: #fff;
+        opacity: 0.8;
+      }
+
+      .fw-cartain .waiting{
+        position: fixed;
+        top: 20%;
+        right: 0;
+        bottom: 0;
+        left: 20%;
+        z-index: 3;
+      }
     </style>
 
     <style>
@@ -349,7 +369,7 @@
           return false;
         }
 
-        $("#btnCopy").hide();
+        $("#fw-cartain").show();
 
         let targetFolderUrl = $("#targetFolderUrl").val().trim();
         let selectedTemplate = [];
@@ -363,6 +383,8 @@
 
           selectedTemplate.push(templateType);
         });
+
+        $("#fw-cartain").hide();
 
         console.log(targetFolderUrl);
         console.log(selectedTemplate);
@@ -690,6 +712,11 @@
         </button>
         <div id="uploadFolderResult" class="result"></div>
       </section>
+
+      <section id="fw-cartain" class="fw-cartain" style="display: none;">
+        <div class="waiting"><img src="https://wpamelia.com/wp-content/uploads/2018/11/ezgif-2-6d0b072c3d3f.gif"></div>
+      </section>
+      
     </div>
   </body>
 </html>

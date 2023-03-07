@@ -68,7 +68,7 @@
       return false;
     }
 
-    $("#btnCopy").hide();
+    $("#fw-cartain").show();
 
     let targetFolderUrl = $("#targetFolderUrl").val().trim();
     let selectedTemplate = [];
@@ -82,7 +82,7 @@
       selectedTemplate.push(templateType);
     });
 
-    $("#btnCopy").show();
+    $("#fw-cartain").hide();
     return false;
   }
 
@@ -120,8 +120,7 @@
       return false;
     }
 
-    $("#btnCreateFolder").hide();
-    $("#createFolderResult").text("Creating folder...");
+    $("#fw-cartain").show();
 
     let featureName = $("#featureName").val().trim();
     let version = $("input[name='version']:checked").val();
@@ -133,6 +132,8 @@
       .withSuccessHandler(showFolderUrl)
       .withFailureHandler(showError)
       .execCreateDevelopFolder(version, featureName);
+
+      $("#fw-cartain").hide();
   }
 
   function showFolderUrl(url) {
@@ -171,6 +172,7 @@
     if (!validUploadFolder()) {
       return false;
     }
+    $("#fw-cartain").show();
     let targetUploadFolderUrl = $("#targetUploadFolderUrl").val().trim();
 
     const file = document.getElementById("fileUploadInput").files[0];
@@ -191,6 +193,8 @@
         .saveFile(obj, targetUploadFolderUrl);
     };
     fr.readAsArrayBuffer(file);
+
+    $("#fw-cartain").hide();
   }
 
   function readURL(input) {
