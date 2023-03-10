@@ -1,0 +1,242 @@
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.3/jquery.min.js"></script>
+<script id="common">
+  function init() {
+    addRequiredForCheckbox();
+    initOnChangeEvent();
+  }
+
+  function addRequiredForCheckbox() {
+    // at required for template checkbox
+    var requiredCheckboxes = $("input[name='template[]']");
+    requiredCheckboxes.change(function () {
+      console.log("init");
+      if (requiredCheckboxes.is(":checked")) {
+        requiredCheckboxes.removeAttr("required");
+      } else {
+        requiredCheckboxes.attr("required", "required");
+      }
+    });
+  }
+
+  function showError(error) {
+    window.alert(
+      "An error has occurred. You can check it in the console tab of the development tool"
+    );
+  }
+
+  function initOnChangeEvent() {
+    $("input[name='act']").change(function () {
+      let act = $(this).val();
+      $("section").hide();
+
+      switch (act) {
+        case "copyTemplate":
+          $("#actGroupCopy").show();
+          break;
+
+        case "createDevFolder":
+          $("#actGroupCreate").show();
+          break;
+
+        case "upload":
+          $("#actGroupUpload").show();
+          break;
+
+        default:
+          // do nothing
+          break;
+      }
+    });
+
+    $("input[name='version']").change(function () {
+      let version = $(this).val();
+      switch (version) {
+        case "other":
+          $("#otherVersion").show();
+          break;
+        default:
+          $("#otherVersion").hide();
+          break;
+      }
+    });
+  }
+</script>
+
+<script name="CopyTemplate">
+  function copyFile() {
+    if (!validCopyTemplate()) {
+      return false;
+    }
+
+    $("#fw-cartain").show();
+
+    let targetFolderUrl = $("#targetFolderUrl").val().trim();
+    let selectedTemplate = [];
+    $("input[name='template[]']:checked").each(function () {
+      let templateType = $(this).val();
+      google.script.run
+        .withSuccessHandler(showTemplateUrl)
+        .withFailureHandler(showError)
+        .executeCopyTemplateByUrl(targetFolderUrl, templateType);
+
+      selectedTemplate.push(templateType);
+    });
+
+    $("#fw-cartain").hide();
+    return false;
+  }
+
+  function showTemplateUrl(result) {
+    console.log(result);
+    $("#copyResult").append(
+      `<p>✅ <a href="${result[1]}" target="_blank">${result[0]}</a></p>`
+    );
+  }
+
+  function validCopyTemplate() {
+    // checking at least template was checked
+    let isValidTemplate = document
+      .querySelector("[name='template[]']")
+      .reportValidity();
+    if (!isValidTemplate) {
+      return false;
+    }
+
+    // checking target folder filled in
+    let isValidFolderUrl = document
+      .querySelector("#targetFolderUrl")
+      .reportValidity();
+    if (!isValidFolderUrl) {
+      return false;
+    }
+
+    return true;
+  }
+</script>
+
+<script name="CreateDevelopFolder">
+  function createFolder() {
+    if (!validCreateDevFolder()) {
+      return false;
+    }
+
+    $("#fw-cartain").show();
+
+    let featureName = $("#featureName").val().trim();
+    let version = $("input[name='version']:checked").val();
+    if (version === "other") {
+      version = $("#otherVersion").val().trim();
+    }
+
+    google.script.run
+      .withSuccessHandler(showFolderUrl)
+      .withFailureHandler(showError)
+      .execCreateDevelopFolder(version, featureName);
+
+      $("#fw-cartain").hide();
+  }
+
+  function showFolderUrl(url) {
+    console.log(url);
+    $("#createFolderResult").html(
+      `<p>✅ <a href="${url}" target="_blank">Created folder</a></p>`
+    );
+    $("#btnCreateFolder").show();
+  }
+
+  function validCreateDevFolder() {
+    // checking target folder filled in
+    if ($("#otherVersion").is(":visible")) {
+      let isOtherVersion = document
+        .querySelector("#otherVersion")
+        .reportValidity();
+      if (!isOtherVersion) {
+        return false;
+      }
+    }
+
+    // checking target folder filled in
+    let isValidFeatureName = document
+      .querySelector("[name='featureName']")
+      .reportValidity();
+    if (!isValidFeatureName) {
+      return false;
+    }
+
+    return true;
+  }
+</script>
+
+<script id="upload-js">
+  function uploadFile() {
+    if (!validUploadFolder()) {
+      return false;
+    }
+    $("#fw-cartain").show();
+    let targetUploadFolderUrl = $("#targetUploadFolderUrl").val().trim();
+
+    const file = document.getElementById("fileUploadInput").files[0];
+    const fr = new FileReader();
+    fr.onload = function (e) {
+      const obj = {
+        filename: file.name,
+        mimeType: file.type,
+        bytes: [...new Int8Array(e.target.result)],
+      };
+      google.script.run
+        .withSuccessHandler((folderUrl) =>
+          $("#uploadFolderResult").html(
+            `✅　<a href="${folderUrl}" target="_blank">Upload finished</a>`
+          )
+        )
+        .withFailureHandler(showError)
+        .saveFile(obj, targetUploadFolderUrl);
+    };
+    fr.readAsArrayBuffer(file);
+
+    $("#fw-cartain").hide();
+  }
+
+  function readURL(input) {
+    if (input.files && input.files[0]) {
+      var reader = new FileReader();
+
+      reader.onload = function (e) {
+        $(".image-upload-wrap").hide();
+
+        $(".file-upload-image").attr("src", e.target.result);
+        $(".file-upload-content").show();
+
+        $(".image-title").html(input.files[0].name);
+      };
+
+      reader.readAsDataURL(input.files[0]);
+    } else {
+      removeUpload();
+    }
+  }
+
+  function removeUpload() {
+    $(".file-upload-input").replaceWith($(".file-upload-input").clone());
+    $(".file-upload-content").hide();
+    $(".image-upload-wrap").show();
+  }
+  $(".image-upload-wrap").bind("dragover", function () {
+    $(".image-upload-wrap").addClass("image-dropping");
+  });
+  $(".image-upload-wrap").bind("dragleave", function () {
+    $(".image-upload-wrap").removeClass("image-dropping");
+  });
+
+  function validUploadFolder() {
+    // checking target folder filled in
+    let isValidFolderUrl = document
+      .querySelector("#targetUploadFolderUrl")
+      .reportValidity();
+    if (!isValidFolderUrl) {
+      return false;
+    }
+
+    return true;
+  }
+</script>
