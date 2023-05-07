@@ -132,7 +132,7 @@
         <h2>Target folder's url</h2>
         <div class="group">
           <input
-            type="text"
+            type="search"
             name="targetUploadFolderUrl"
             class="form-control"
             id="targetUploadFolderUrl"
@@ -150,11 +150,10 @@
                 onchange="readURL(this);"
               />
               <div class="drag-text">
-                <h3>Drag and drop a file or select add Image</h3>
+                <h3>Drag and drop or select a file</h3>
               </div>
             </div>
             <div class="file-upload-content">
-              <img class="file-upload-image" src="#" alt="your image" />
               <div class="image-title-wrap">
                 <button
                   type="button"
@@ -165,14 +164,6 @@
                 </button>
               </div>
             </div>
-
-            <button
-              class="file-upload-btn"
-              type="button"
-              onclick="$('.file-upload-input').trigger( 'click' )"
-            >
-              Add file
-            </button>
           </div>
         </div>
         <button id="btnUploadFile" class="btn" onclick="uploadFile()">
@@ -181,8 +172,12 @@
         <div id="uploadFolderResult" class="result"></div>
       </section>
 
-      <section id="fw-cartain" class="fw-cartain" style="display: none;">
-        <div class="waiting"><img src="https://wpamelia.com/wp-content/uploads/2018/11/ezgif-2-6d0b072c3d3f.gif"></div>
+      <section id="fw-cartain" class="fw-cartain" style="display: none">
+        <div class="waiting">
+          <img
+            src="https://wpamelia.com/wp-content/uploads/2018/11/ezgif-2-6d0b072c3d3f.gif"
+          />
+        </div>
       </section>
     </div>
 

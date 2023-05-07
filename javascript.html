@@ -73,6 +73,7 @@
     let selectedTemplate = [];
     $("input[name='template[]']:checked").each(function () {
       let templateType = $(this).val();
+
       google.script.run
         .withSuccessHandler(showTemplateUrl)
         .withFailureHandler(showError)
@@ -84,8 +85,6 @@
     console.log(targetFolderUrl);
     console.log(selectedTemplate);
 
-    $("#btnCopy").show();
-    $("#fw-cartain").hide();
     return false;
   }
 
@@ -94,7 +93,8 @@
     $("#copyResult").append(
       `<p>✅ <a href="${result[1]}" target="_blank">${result[0]}</a></p>`
     );
-    //$("#fw-cartain").hide();
+    $("#btnCopy").show();
+    $("#fw-cartain").hide();
   }
 
   function validCopyTemplate() {
@@ -138,8 +138,6 @@
       .withSuccessHandler(showFolderUrl)
       .withFailureHandler(showError)
       .execCreateDevelopFolder(version, featureName);
-
-    $("#fw-cartain").hide();
   }
 
   function showFolderUrl(url) {
@@ -148,6 +146,7 @@
       `<p>✅ <a href="${url}" target="_blank">Created folder</a></p>`
     );
     $("#btnCreateFolder").show();
+    $("#fw-cartain").hide();
   }
 
   function validCreateDevFolder() {
@@ -190,16 +189,18 @@
         bytes: [...new Int8Array(e.target.result)],
       };
       google.script.run
-        .withSuccessHandler((folderUrl) =>
-          $("#uploadFolderResult").html(
-            `✅　<a href="${folderUrl}" target="_blank">Upload finished</a>`
-          )
-        )
+        .withSuccessHandler(showUploadResult)
         .withFailureHandler(showError)
         .uploadFileToDrive(obj, targetUploadFolderUrl);
     };
     fr.readAsArrayBuffer(file);
+  }
 
+  function showUploadResult(folderUrl) {
+    console.log(folderUrl);
+    $("#uploadFolderResult").html(
+      `✅　<a href="${folderUrl}" target="_blank">Upload finished</a>`
+    );
     $("#fw-cartain").hide();
   }
 
