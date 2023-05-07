@@ -1,12 +1,27 @@
+function uploadFileToDrive(obj, targetUploadFolderUrl) {
+  let blob = Utilities.newBlob(obj.bytes, obj.mimeType, obj.filename);
+  let targetFolder = getFolderByUrl(targetUploadFolderUrl);
+
+  let isAllowToUploadResult = isAllowToUpload(targetFolder);
+
+  if (isAllowToUploadResult) {
+    targetFolder.createFile(blob);
+    Logger.log("File has been uploaded to folder " + targetFolder.getName());
+    return targetUploadFolderUrl;
+  } else {
+    Logger.log("Cannot upload file to this folder " + targetFolder.getName());
+    throw new Error("You don't have permission to upload to this folder.");
+  }
+}
+
 /**
  * Find files in target folder
  */
 function findFileIn(folder, name) {
-  var files = filesIn(folder);
-  var names = fileNames(files);
+  let files = filesIn(folder);
+  let names = fileNames(files);
   if (checkValIn(names, name)) {
-    var file = folder.getFilesByName(name).next();
-    return file;
+    return folder.getFilesByName(name).next();
   }
 }
 
@@ -14,11 +29,10 @@ function findFileIn(folder, name) {
  * Return all files in target folder
  */
 function filesIn(folder) {
-  var filderInterator = folder.getFiles();
-  var arr = [];
+  let filderInterator = folder.getFiles();
+  let arr = [];
   while (filderInterator.hasNext()) {
-    var file = filderInterator.next();
-    arr.push(file);
+    arr.push(filderInterator.next());
   }
   return arr;
 }
@@ -27,10 +41,9 @@ function filesIn(folder) {
  * returns an array of filenames
  */
 function fileNames(files) {
-  var arr = [];
-  for (var i = 0; i < files.length; i++) {
-    var name = files[i].getName();
-    arr.push(name);
+  let arr = [];
+  for (let i = 0; i < files.length; i++) {
+    arr.push(files[i].getName());
   }
   return arr;
 }
@@ -42,9 +55,28 @@ function checkValIn(arr, val) {
   return arr.indexOf(val) > -1;
 }
 
-function saveFile(obj, targetUploadFolderUrl) {
-  let blob = Utilities.newBlob(obj.bytes, obj.mimeType, obj.filename);
-  let folder = getFolderByUrl(targetUploadFolderUrl);
-  folder.createFile(blob);
-  return targetUploadFolderUrl;
+/**
+ * check current folder is allow to access
+ */
+function isAllowToUpload(targetFolder) {
+  // target folder is root folder
+  if (targetFolder.getId() === DEVELOP_FOLDER_ID) {
+    return true;
+  }
+
+  let parentFolders = targetFolder.getParents();
+  while (parentFolders.hasNext()) {
+    let parentFolder = parentFolders.next();
+    Logger.log("Parent folder: " + parentFolder.getName());
+    Logger.log("Parent folder id: " + parentFolder.getId());
+
+    if (parentFolder.getId() === DEVELOP_FOLDER_ID) {
+      return true;
+    }
+
+    // check next parent (up 1 level)
+    parentFolders = parentFolder.getParents();
+  }
+
+  return false;
 }

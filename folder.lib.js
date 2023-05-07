@@ -6,18 +6,16 @@ function createFolderForTemplateFile(arrPath) {
   return createVerifyPath(developFolder, arrPath);
 }
 
-
-function createVerifyPath(baseFolder,arrPath) {
+function createVerifyPath(baseFolder, arrPath) {
   let parentFolder;
   let folderInterator;
   for (let i = 0; i < arrPath.length; i++) {
-  
     if (i === 0) {
       parentFolder = baseFolder;
     }
     folderInterator = parentFolder.getFoldersByName(arrPath[i]);
 
-    if(!(folderInterator.hasNext())) {
+    if (!folderInterator.hasNext()) {
       parentFolder.createFolder(arrPath[i]);
       folderInterator = parentFolder.getFoldersByName(arrPath[i]);
     }
@@ -30,5 +28,7 @@ function createVerifyPath(baseFolder,arrPath) {
 }
 
 function getFolderByUrl(folderUrl) {
-  return DriveApp.getFolderById(folderUrl.replace(/^.+\//, ''));
+  return DriveApp.getFolderById(
+    folderUrl.replace(/^.+\//, "").replace(/\?.+/, "")
+  );
 }
