@@ -19,9 +19,7 @@
   }
 
   function showError(error) {
-    window.alert(
-      "An error has occurred. You can check it in the console tab of the development tool"
-    );
+    window.alert(error);
   }
 
   function initOnChangeEvent() {
@@ -68,6 +66,7 @@
       return false;
     }
 
+    $("#btnCopy").hide();
     $("#fw-cartain").show();
 
     let targetFolderUrl = $("#targetFolderUrl").val().trim();
@@ -82,6 +81,10 @@
       selectedTemplate.push(templateType);
     });
 
+    console.log(targetFolderUrl);
+    console.log(selectedTemplate);
+
+    $("#btnCopy").show();
     $("#fw-cartain").hide();
     return false;
   }
@@ -91,6 +94,7 @@
     $("#copyResult").append(
       `<p>✅ <a href="${result[1]}" target="_blank">${result[0]}</a></p>`
     );
+    //$("#fw-cartain").hide();
   }
 
   function validCopyTemplate() {
@@ -120,6 +124,8 @@
       return false;
     }
 
+    $("#btnCreateFolder").hide();
+    $("#createFolderResult").text("Creating folder...");
     $("#fw-cartain").show();
 
     let featureName = $("#featureName").val().trim();
@@ -133,7 +139,7 @@
       .withFailureHandler(showError)
       .execCreateDevelopFolder(version, featureName);
 
-      $("#fw-cartain").hide();
+    $("#fw-cartain").hide();
   }
 
   function showFolderUrl(url) {
@@ -190,7 +196,7 @@
           )
         )
         .withFailureHandler(showError)
-        .saveFile(obj, targetUploadFolderUrl);
+        .uploadFileToDrive(obj, targetUploadFolderUrl);
     };
     fr.readAsArrayBuffer(file);
 
@@ -199,12 +205,11 @@
 
   function readURL(input) {
     if (input.files && input.files[0]) {
-      var reader = new FileReader();
+      let reader = new FileReader();
 
       reader.onload = function (e) {
         $(".image-upload-wrap").hide();
 
-        $(".file-upload-image").attr("src", e.target.result);
         $(".file-upload-content").show();
 
         $(".image-title").html(input.files[0].name);

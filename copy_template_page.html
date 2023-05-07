@@ -101,8 +101,8 @@
           <label for="version1">v10.0</label>
           <input type="radio" name="version" id="version2" value="v10.1" />
           <label for="version2">v10.1</label>
-          <input type="radio" name="version" id="version3" value="vX.X" />
-          <label for="version3">vX.X</label>
+          <input type="radio" name="version" id="version3" value="v.x.x" />
+          <label for="version3">v.x.x</label>
           <input type="radio" name="version" id="version4" value="other" />
           <label for="version4">other</label>
           <input type="search" name="otherVersion" id="otherVersion" required />
@@ -129,39 +129,56 @@
 
       <!-- section: Upload file -->
       <section id="actGroupUpload">
-        <div class="file-upload">
-          <div class="image-upload-wrap">
-            <input
-              class="file-upload-input"
-              type="file"
-              onchange="readURL(this);"
-              accept="image/*"
-            />
-            <div class="drag-text">
-              <h3>Drag and drop a file or select add Image</h3>
-            </div>
-          </div>
-          <div class="file-upload-content">
-            <img class="file-upload-image" src="#" alt="your image" />
-            <div class="image-title-wrap">
-              <button
-                type="button"
-                onclick="removeUpload()"
-                class="remove-image"
-              >
-                Remove <span class="image-title">Uploaded Image</span>
-              </button>
-            </div>
-          </div>
-
-          <button
-            class="file-upload-btn"
-            type="button"
-            onclick="$('.file-upload-input').trigger( 'click' )"
-          >
-            Upload file
-          </button>
+        <h2>Target folder's url</h2>
+        <div class="group">
+          <input
+            type="text"
+            name="targetUploadFolderUrl"
+            class="form-control"
+            id="targetUploadFolderUrl"
+            placeholder="Enter target folder's url"
+            required="required"
+          />
         </div>
+        <div class="group">
+          <div class="file-upload">
+            <div class="image-upload-wrap">
+              <input
+                class="file-upload-input"
+                type="file"
+                id="fileUploadInput"
+                onchange="readURL(this);"
+              />
+              <div class="drag-text">
+                <h3>Drag and drop a file or select add Image</h3>
+              </div>
+            </div>
+            <div class="file-upload-content">
+              <img class="file-upload-image" src="#" alt="your image" />
+              <div class="image-title-wrap">
+                <button
+                  type="button"
+                  onclick="removeUpload()"
+                  class="remove-image"
+                >
+                  Remove <span class="image-title">Uploaded Image</span>
+                </button>
+              </div>
+            </div>
+
+            <button
+              class="file-upload-btn"
+              type="button"
+              onclick="$('.file-upload-input').trigger( 'click' )"
+            >
+              Add file
+            </button>
+          </div>
+        </div>
+        <button id="btnUploadFile" class="btn" onclick="uploadFile()">
+          Upload File
+        </button>
+        <div id="uploadFolderResult" class="result"></div>
       </section>
 
       <section id="fw-cartain" class="fw-cartain" style="display: none;">
