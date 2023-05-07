@@ -1,21 +1,53 @@
-function uploadFileToDrive(obj, targetUploadFolderUrl) {
-  let blob = Utilities.newBlob(obj.bytes, obj.mimeType, obj.filename);
-  let targetFolder = getFolderByUrl(targetUploadFolderUrl);
+/**
+ * Upload file to Google Drive.
+ * Throws an error if the user doesn't have permission to upload to the target folder.
+ *
+ * @param {Object} obj - The object to upload.
+ * @param {string} targetFolderUrl - The URL of the target folder.
+ * @returns {string} The URL of the uploaded file.
+ */
+function uploadFileToDrive(obj, targetFolderUrl) {
+  const blob = Utilities.newBlob(obj.bytes, obj.mimeType, obj.filename);
+  const targetFolder = DriveApp.getFolderById(
+    targetFolderUrl.replace(/^.+\//, "").replace(/\?.+/, "")
+  );
 
-  let isAllowToUploadResult = isAllowToUpload(targetFolder);
-
-  if (isAllowToUploadResult) {
-    targetFolder.createFile(blob);
-    Logger.log("File has been uploaded to folder " + targetFolder.getName());
-    return targetUploadFolderUrl;
-  } else {
-    Logger.log("Cannot upload file to this folder " + targetFolder.getName());
-    throw new Error("You don't have permission to upload to this folder.");
+  if (!isFolderAllowed(targetFolder)) {
+    throw new Error(`You don't have permission to upload to this folder.`);
   }
+
+  const uploadedFile = targetFolder.createFile(blob);
+  Logger.log(`File has been uploaded to folder ${targetFolder.getName()}`);
+  return uploadedFile.getUrl();
 }
 
 /**
- * Find files in target folder
+ * Check whether the given folder is allowed to access.
+ * Returns true if the folder is the root folder or a subfolder of the root folder, false otherwise.
+ *
+ * @param {Folder} folder - The folder to check.
+ * @returns {boolean} Whether the folder is allowed to access.
+ */
+function isFolderAllowed(folder) {
+  let parentFolder = folder.getParents().next();
+
+  while (parentFolder.getId() !== DriveApp.getRootFolder().getId()) {
+    parentFolder = parentFolder.getParents().next();
+  }
+
+  return (
+    folder.getId() === DEVELOP_FOLDER_ID ||
+    parentFolder.getId() === DEVELOP_FOLDER_ID
+  );
+}
+
+/**
+ * Find a file with the given name in the given folder.
+ * Returns the file if found, null otherwise.
+ *
+ * @param {Folder} folder - The folder to search.
+ * @param {string} name - The name of the file.
+ * @returns {File|null} The file with the given name, or null if not found.
  */
 function findFileIn(folder, name) {
   let files = filesIn(folder);
@@ -53,30 +85,4 @@ function fileNames(files) {
  */
 function checkValIn(arr, val) {
   return arr.indexOf(val) > -1;
-}
-
-/**
- * check current folder is allow to access
- */
-function isAllowToUpload(targetFolder) {
-  // target folder is root folder
-  if (targetFolder.getId() === DEVELOP_FOLDER_ID) {
-    return true;
-  }
-
-  let parentFolders = targetFolder.getParents();
-  while (parentFolders.hasNext()) {
-    let parentFolder = parentFolders.next();
-    Logger.log("Parent folder: " + parentFolder.getName());
-    Logger.log("Parent folder id: " + parentFolder.getId());
-
-    if (parentFolder.getId() === DEVELOP_FOLDER_ID) {
-      return true;
-    }
-
-    // check next parent (up 1 level)
-    parentFolders = parentFolder.getParents();
-  }
-
-  return false;
 }

@@ -43,7 +43,14 @@ function tesing() {
 
 function executeCopyTemplateByUrl(targetFolderUrl, templateType) {
   console.log(templateType);
-  let folder = getFolderByUrl(targetFolderUrl);
+  const folder = DriveApp.getFolderById(
+    targetFolderUrl.replace(/^.+\//, "").replace(/\?.+/, "")
+  );
+
+  if (!isFolderAllowed(folder)) {
+    throw new Error(`You don't have permission in target folder.`);
+  }
+
   let url = (templateName = "");
   switch (templateType) {
     case TEMPLATE_TYPE_CHECK_LIST:
@@ -165,7 +172,7 @@ function copyFile(fileId, folder) {
   let file = DriveApp.getFileById(fileId);
   let newFileName = file.getName() + "_copy";
 
-  var dest = findFileIn(folder, newFileName);
+  let dest = findFileIn(folder, newFileName);
   if (dest === undefined) {
     file.makeCopy(newFileName, folder);
   }

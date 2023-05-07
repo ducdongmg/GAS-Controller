@@ -20,6 +20,8 @@
 
   function showError(error) {
     window.alert(error);
+    $("#fw-cartain").hide();
+    $("button").show();
   }
 
   function initOnChangeEvent() {
@@ -210,9 +212,7 @@
 
       reader.onload = function (e) {
         $(".image-upload-wrap").hide();
-
         $(".file-upload-content").show();
-
         $(".image-title").html(input.files[0].name);
       };
 
